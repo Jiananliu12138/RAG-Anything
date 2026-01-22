@@ -1,0 +1,11 @@
+# 1. 修改 LLM 默认模型和地址
+sed -i 's/model: str = "gpt-4o-mini"/model: str = "qwen3-vl:8b"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/llm/openai.py
+sed -i 's/base_url: str | None = None/base_url: str | None = "http:\/\/localhost:11434\/v1"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/llm/openai.py
+
+# 2. 修改 Embedding 默认模型和地址
+sed -i 's/model: str = "text-embedding-3-small"/model: str = "nomic-embed-text:latest"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/llm/openai.py
+sed -i 's/model: str = "text-embedding-3-large"/model: str = "nomic-embed-text:latest"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/llm/openai.py
+
+# 3. 修改 LightRAG 类内部的硬编码默认值
+sed -i 's/tiktoken_model_name: str = "gpt-4o-mini"/tiktoken_model_name: str = "qwen3-vl:8b"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/lightrag.py
+sed -i 's/llm_model_name: str = "gpt-4o-mini"/llm_model_name: str = "qwen3-vl:8b"/g' /home/ik2200-2025-g2/miniconda3/envs/rag-anything/lib/python3.10/site-packages/lightrag/lightrag.py

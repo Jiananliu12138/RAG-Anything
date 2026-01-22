@@ -1,0 +1,54 @@
+{
+  "doc-047bde028928bca17f75067dadfda412": {
+    "relation_pairs": [
+      [
+        "LightRAG",
+        "incremental update algorithm"
+      ],
+      [
+        "Tokyo",
+        "World Athletics Championship"
+      ],
+      [
+        "Lianghao Xia",
+        "LightRAG"
+      ],
+      [
+        "Noah Carter",
+        "World Athletics Championship"
+      ],
+      [
+        "LightRAG",
+        "Zirui Guo"
+      ],
+      [
+        "Beijing University of Posts and Telecommunications",
+        "Zirui Guo"
+      ],
+      [
+        "Lianghao Xia",
+        "University of Hong Kong"
+      ],
+      [
+        "100m Sprint Record",
+        "Noah Carter"
+      ],
+      [
+        "University of Hong Kong",
+        "Zirui Guo"
+      ],
+      [
+        "Carbon-Fiber Spikes",
+        "Noah Carter"
+      ],
+      [
+        "100m Sprint Record",
+        "World Athletics Championship"
+      ]
+    ],
+    "count": 11,
+    "create_time": 1769045622,
+    "update_time": 1769045622,
+    "_id": "doc-047bde028928bca17f75067dadfda412"
+  }
+}

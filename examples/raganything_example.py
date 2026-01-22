@@ -115,10 +115,14 @@ async def process_with_rag(
             enable_equation_processing=True,
         )
 
-        # Define LLM model function
+        # Define LLM model function - using environment variables for configuration
+        llm_model = os.getenv("LLM_MODEL", "qwen3-vl:8b")
+        
         def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
+            # 增加超时时间到 600 秒，本地运行大论文需要更多时间
+            kwargs["timeout"] = 600
             return openai_complete_if_cache(
-                "gpt-4o-mini",
+                llm_model,
                 prompt,
                 system_prompt=system_prompt,
                 history_messages=history_messages,
@@ -127,7 +131,9 @@ async def process_with_rag(
                 **kwargs,
             )
 
-        # Define vision model function for image processing
+        # Define vision model function for image processing - using environment variables
+        vision_model = os.getenv("VISION_MODEL", llm_model)  # Use LLM model if VISION_MODEL not set
+        
         def vision_model_func(
             prompt,
             system_prompt=None,
@@ -139,7 +145,7 @@ async def process_with_rag(
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
                 return openai_complete_if_cache(
-                    "gpt-4o",
+                    vision_model,
                     "",
                     system_prompt=None,
                     history_messages=[],
@@ -151,7 +157,7 @@ async def process_with_rag(
             # Traditional single image format
             elif image_data:
                 return openai_complete_if_cache(
-                    "gpt-4o",
+                    vision_model,
                     "",
                     system_prompt=None,
                     history_messages=[],
@@ -182,9 +188,25 @@ async def process_with_rag(
             else:
                 return llm_model_func(prompt, system_prompt, history_messages, **kwargs)
 
-        # Define embedding function - using environment variables for configuration
-        embedding_dim = int(os.getenv("EMBEDDING_DIM", "3072"))
-        embedding_model = os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
+        # 强制从 .env 文件读取配置，避免环境变量冲突
+        from dotenv import dotenv_values
+        
+        # 彻底清除当前进程中的冲突环境变量，确保 load_dotenv 或直接读取起作用
+        for key in ["EMBEDDING_DIM", "EMBEDDING_MODEL", "LLM_MODEL"]:
+            if key in os.environ:
+                del os.environ[key]
+                
+        env_values = dotenv_values(".env")
+        
+        embedding_dim = int(env_values.get("EMBEDDING_DIM", 768))
+        embedding_model = env_values.get("EMBEDDING_MODEL", "nomic-embed-text:latest")
+        embedding_base_url = env_values.get("EMBEDDING_BINDING_HOST", base_url)
+        embedding_api_key = env_values.get("EMBEDDING_BINDING_API_KEY", api_key)
+        
+        logger.info(f"📊 [DEBUG] 强制使用以下配置:")
+        logger.info(f"   - 模型: {embedding_model}")
+        logger.info(f"   - 维度: {embedding_dim}")
+        logger.info(f"   - URL: {embedding_base_url}")
 
         embedding_func = EmbeddingFunc(
             embedding_dim=embedding_dim,
@@ -192,17 +214,27 @@ async def process_with_rag(
             func=lambda texts: openai_embed(
                 texts,
                 model=embedding_model,
-                api_key=api_key,
-                base_url=base_url,
+                api_key=embedding_api_key,
+                base_url=embedding_base_url,
+                embedding_dim=embedding_dim,  # 关键：必须传递embedding_dim给openai_embed
             ),
         )
+        
+        # 验证embedding_func的维度是否正确
+        logger.info(f"✅ EmbeddingFunc 创建完成，验证维度: {embedding_func.embedding_dim}")
 
         # Initialize RAGAnything with new dataclass structure
+        # 移除不支持的参数，确保维度通过 embedding_func 传递
+        # 增加超时时间并降低并发，防止本地模型超时
         rag = RAGAnything(
             config=config,
             llm_model_func=llm_model_func,
             vision_model_func=vision_model_func,
             embedding_func=embedding_func,
+            lightrag_kwargs={
+                "default_llm_timeout": 1200,  # 增加到 20 分钟
+                "llm_model_max_async": 1,     # 降低并发，一个一个处理，防止卡死
+            }
         )
 
         # Process document

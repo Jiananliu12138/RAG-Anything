@@ -1,0 +1,271 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d13" for="edge" attr.name="truncate" attr.type="string" />
+  <key id="d12" for="edge" attr.name="created_at" attr.type="long" />
+  <key id="d11" for="edge" attr.name="file_path" attr.type="string" />
+  <key id="d10" for="edge" attr.name="source_id" attr.type="string" />
+  <key id="d9" for="edge" attr.name="keywords" attr.type="string" />
+  <key id="d8" for="edge" attr.name="description" attr.type="string" />
+  <key id="d7" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d6" for="node" attr.name="truncate" attr.type="string" />
+  <key id="d5" for="node" attr.name="created_at" attr.type="long" />
+  <key id="d4" for="node" attr.name="file_path" attr.type="string" />
+  <key id="d3" for="node" attr.name="source_id" attr.type="string" />
+  <key id="d2" for="node" attr.name="description" attr.type="string" />
+  <key id="d1" for="node" attr.name="entity_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="entity_id" attr.type="string" />
+  <graph edgedefault="undirected">
+    <node id="Zirui Guo">
+      <data key="d0">Zirui Guo</data>
+      <data key="d1">person</data>
+      <data key="d2">Zirui Guo is a researcher at Beijing University of Posts and Telecommunications.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045619</data>
+      <data key="d6" />
+    </node>
+    <node id="Lianghao Xia">
+      <data key="d0">Lianghao Xia</data>
+      <data key="d1">person</data>
+      <data key="d2">Lianghao Xia is a researcher at University of Hong Kong.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045619</data>
+      <data key="d6" />
+    </node>
+    <node id="Beijing University of Posts and Telecommunications">
+      <data key="d0">Beijing University of Posts and Telecommunications</data>
+      <data key="d1">organization</data>
+      <data key="d2">Beijing University of Posts and Telecommunications is a university in Beijing, China.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="University of Hong Kong">
+      <data key="d0">University of Hong Kong</data>
+      <data key="d1">organization</data>
+      <data key="d2">University of Hong Kong is a university located in Hong Kong.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="RAG">
+      <data key="d0">RAG</data>
+      <data key="d1">concept</data>
+      <data key="d2">RAG (Retrieval-Augmented Generation) is a technique that combines retrieval with language generation.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="LLMs">
+      <data key="d0">LLMs</data>
+      <data key="d1">concept</data>
+      <data key="d2">LLMs (Large Language Models) are machine learning models that generate human-like text.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="graph structures">
+      <data key="d0">graph structures</data>
+      <data key="d1">concept</data>
+      <data key="d2">Graph structures are used to represent relationships between entities in data.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="vector representations">
+      <data key="d0">vector representations</data>
+      <data key="d1">concept</data>
+      <data key="d2">Vector representations are mathematical representations of data points.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="incremental update algorithm">
+      <data key="d0">incremental update algorithm</data>
+      <data key="d1">concept</data>
+      <data key="d2">Incremental update algorithm is a method to update models incrementally.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="experimental validation">
+      <data key="d0">experimental validation</data>
+      <data key="d1">concept</data>
+      <data key="d2">Experimental validation involves testing models under controlled conditions.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="LightRAG">
+      <data key="d0">LightRAG</data>
+      <data key="d1">artifact</data>
+      <data key="d2">LightRAG is an artifact that is a lightweight version of RAG.</data>
+      <data key="d3">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="World Athletics Championship">
+      <data key="d0">World Athletics Championship</data>
+      <data key="d1">event</data>
+      <data key="d2">The World Athletics Championship is a global sports competition featuring top athletes in track and field.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58&lt;SEP&gt;chunk-f2aa90decca630b45f4083aa67be29b9</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="Tokyo">
+      <data key="d0">Tokyo</data>
+      <data key="d1">location</data>
+      <data key="d2">Tokyo is the host city of the World Athletics Championship.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="Noah Carter">
+      <data key="d0">Noah Carter</data>
+      <data key="d1">person</data>
+      <data key="d2">Noah Carter is a sprinter who set a new record in the 100m sprint at the World Athletics Championship.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="100m Sprint Record">
+      <data key="d0">100m Sprint Record</data>
+      <data key="d1">category</data>
+      <data key="d2">The 100m sprint record is a benchmark in athletics, recently broken by Noah Carter.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58&lt;SEP&gt;chunk-f2aa90decca630b45f4083aa67be29b9</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="Carbon-Fiber Spikes">
+      <data key="d0">Carbon-Fiber Spikes</data>
+      <data key="d1">equipment</data>
+      <data key="d2">Carbon-fiber spikes are advanced sprinting shoes that provide enhanced speed and traction.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <node id="World Athletics Federation">
+      <data key="d0">World Athletics Federation</data>
+      <data key="d1">organization</data>
+      <data key="d2">The World Athletics Federation is the governing body overseeing the World Athletics Championship and record validations.</data>
+      <data key="d3">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d4">test.pdf</data>
+      <data key="d5">1769045620</data>
+      <data key="d6" />
+    </node>
+    <edge source="Zirui Guo" target="Beijing University of Posts and Telecommunications">
+      <data key="d7">1.0</data>
+      <data key="d8">Zirui Guo is affiliated with Beijing University of Posts and Telecommunications.</data>
+      <data key="d9">has_affiliation</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Zirui Guo" target="University of Hong Kong">
+      <data key="d7">1.0</data>
+      <data key="d8">Zirui Guo is affiliated with University of Hong Kong.</data>
+      <data key="d9">has_affiliation</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Zirui Guo" target="LightRAG">
+      <data key="d7">1.0</data>
+      <data key="d8">Zirui Guo is an author of LightRAG.</data>
+      <data key="d9">is_author</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Lianghao Xia" target="University of Hong Kong">
+      <data key="d7">1.0</data>
+      <data key="d8">Lianghao Xia is affiliated with University of Hong Kong.</data>
+      <data key="d9">has_affiliation</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Lianghao Xia" target="LightRAG">
+      <data key="d7">1.0</data>
+      <data key="d8">Lianghao Xia is an author of LightRAG.</data>
+      <data key="d9">is_author</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="incremental update algorithm" target="LightRAG">
+      <data key="d7">1.0</data>
+      <data key="d8">LightRAG is associated with incremental update algorithm.</data>
+      <data key="d9">is_associated_with</data>
+      <data key="d10">chunk-8c9bdc8708b968516ce232a51beefecc</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="World Athletics Championship" target="100m Sprint Record">
+      <data key="d7">1.0</data>
+      <data key="d8">The 100m sprint record was broken at the World Athletics Championship.`</data>
+      <data key="d9">championship result,event record</data>
+      <data key="d10">chunk-f2aa90decca630b45f4083aa67be29b9</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="World Athletics Championship" target="Tokyo">
+      <data key="d7">1.0</data>
+      <data key="d8">The World Athletics Championship is being hosted in Tokyo.</data>
+      <data key="d9">event location,international competition</data>
+      <data key="d10">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="World Athletics Championship" target="Noah Carter">
+      <data key="d7">1.0</data>
+      <data key="d8">Noah Carter is competing at the World Athletics Championship.</data>
+      <data key="d9">athlete participation,competition</data>
+      <data key="d10">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045622</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Noah Carter" target="100m Sprint Record">
+      <data key="d7">1.0</data>
+      <data key="d8">Noah Carter set a new 100m sprint record at the championship.</data>
+      <data key="d9">athlete achievement,record-breaking</data>
+      <data key="d10">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045621</data>
+      <data key="d13" />
+    </edge>
+    <edge source="Noah Carter" target="Carbon-Fiber Spikes">
+      <data key="d7">1.0</data>
+      <data key="d8">Noah Carter used carbon-fiber spikes to enhance performance during the race.</data>
+      <data key="d9">athletic equipment,performance boost</data>
+      <data key="d10">chunk-ca259d1ef799c1eb54e85f4ffa7a4d58</data>
+      <data key="d11">test.pdf</data>
+      <data key="d12">1769045622</data>
+      <data key="d13" />
+    </edge>
+  </graph>
+</graphml>
