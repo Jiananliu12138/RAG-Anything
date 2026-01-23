@@ -144,36 +144,62 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                # Ollama expects messages parameter in kwargs
+                # 转换 messages 格式为 Ollama 风格
+                ollama_messages = []
+                for msg in messages:
+                    if isinstance(msg.get("content"), list):
+                        # 处理 OpenAI 风格的多模态消息
+                        text_parts = []
+                        images = []
+                        for part in msg["content"]:
+                            if part.get("type") == "text":
+                                text_parts.append(part.get("text", ""))
+                            elif part.get("type") == "image_url":
+                                # 提取纯 base64（去掉 data:image/...;base64, 前缀）
+                                image_url = part.get("image_url", {}).get("url", "")
+                                if "base64," in image_url:
+                                    images.append(image_url.split("base64,")[1])
+                                else:
+                                    images.append(image_url)
+                        
+                        ollama_msg = {
+                            "role": msg["role"],
+                            "content": " ".join(text_parts)
+                        }
+                        if images:
+                            ollama_msg["images"] = images
+                        ollama_messages.append(ollama_msg)
+                    else:
+                        # 已经是 Ollama 格式，直接使用
+                        ollama_messages.append(msg)
+                
                 return await ollama_model_complete(
                     "",
                     system_prompt=None,
                     history_messages=[],
-                    messages=messages,
+                    messages=ollama_messages,
                     hashing_kv=kwargs.get("hashing_kv"),
                     host=vision_host,
                     timeout=1200,  # 增加超时到 20 分钟
                     options={"num_ctx": 4096},
+                    format="json",  # ✅ 强制 JSON 输出格式
                     **{k: v for k, v in kwargs.items() if k != "hashing_kv"},
                 )
             # Traditional single image format
             elif image_data:
-                # Build Ollama-compatible messages with image
+                # Build Ollama-native messages format with image
+                # Ollama expects: {"role": "user", "content": "text", "images": ["base64"]}
                 vision_messages = []
                 if system_prompt:
                     vision_messages.append({"role": "system", "content": system_prompt})
+                
+                # Ollama 风格：content 是字符串，图片放在 images 数组中（纯 base64）
                 vision_messages.append({
                     "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{image_data}"
-                            },
-                        },
-                    ],
+                    "content": prompt,  # ✅ content 是字符串
+                    "images": [image_data]  # ✅ 纯 base64 字符串数组（不带 data:image/jpeg;base64, 前缀）
                 })
+                
                 return await ollama_model_complete(
                     "",
                     system_prompt=None,
@@ -183,6 +209,7 @@ async def process_with_rag(
                     host=vision_host,
                     timeout=1200,  # 增加超时到 20 分钟
                     options={"num_ctx": 4096},
+                    format="json",  # ✅ 强制 JSON 输出格式，避免 regex fallback
                     **{k: v for k, v in kwargs.items() if k != "hashing_kv"},
                 )
             # Pure text format
