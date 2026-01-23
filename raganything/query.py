@@ -463,6 +463,7 @@ class QueryMixin:
                     prompt,
                     image_data=image_base64,
                     system_prompt=PROMPTS["QUERY_IMAGE_ANALYST_SYSTEM"],
+                    hashing_kv=processor.hashing_kv,
                 )
                 return description
 
@@ -489,7 +490,9 @@ class QueryMixin:
         )
 
         description = await processor.modal_caption_func(
-            prompt, system_prompt=PROMPTS["QUERY_TABLE_ANALYST_SYSTEM"]
+            prompt,
+            system_prompt=PROMPTS["QUERY_TABLE_ANALYST_SYSTEM"],
+            hashing_kv=processor.hashing_kv,
         )
 
         return description
@@ -506,7 +509,9 @@ class QueryMixin:
         )
 
         description = await processor.modal_caption_func(
-            prompt, system_prompt=PROMPTS["QUERY_EQUATION_ANALYST_SYSTEM"]
+            prompt,
+            system_prompt=PROMPTS["QUERY_EQUATION_ANALYST_SYSTEM"],
+            hashing_kv=processor.hashing_kv,
         )
 
         return description
@@ -526,6 +531,7 @@ class QueryMixin:
             system_prompt=PROMPTS["QUERY_GENERIC_ANALYST_SYSTEM"].format(
                 content_type=content_type
             ),
+            hashing_kv=processor.hashing_kv,
         )
 
         return description

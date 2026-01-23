@@ -908,6 +908,7 @@ class ImageModalProcessor(BaseModalProcessor):
                 vision_prompt,
                 image_data=image_base64,
                 system_prompt=PROMPTS["IMAGE_ANALYSIS_SYSTEM"],
+                hashing_kv=self.hashing_kv,
             )
 
             # Parse response (reuse existing logic)
@@ -1101,6 +1102,7 @@ class TableModalProcessor(BaseModalProcessor):
             response = await self.modal_caption_func(
                 table_prompt,
                 system_prompt=PROMPTS["TABLE_ANALYSIS_SYSTEM"],
+                hashing_kv=self.hashing_kv,
             )
 
             # Parse response (reuse existing logic)
@@ -1289,6 +1291,7 @@ class EquationModalProcessor(BaseModalProcessor):
             response = await self.modal_caption_func(
                 equation_prompt,
                 system_prompt=PROMPTS["EQUATION_ANALYSIS_SYSTEM"],
+                hashing_kv=self.hashing_kv,
             )
 
             # Parse response (reuse existing logic)
@@ -1463,6 +1466,7 @@ class GenericModalProcessor(BaseModalProcessor):
                 system_prompt=PROMPTS["GENERIC_ANALYSIS_SYSTEM"].format(
                     content_type=content_type
                 ),
+                hashing_kv=self.hashing_kv,
             )
 
             # Parse response (reuse existing logic)
