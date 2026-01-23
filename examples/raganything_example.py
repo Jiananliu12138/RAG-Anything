@@ -21,7 +21,8 @@ import sys
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from lightrag.llm.openai import openai_complete_if_cache, openai_embed
+from functools import partial
+from lightrag.llm.ollama import ollama_model_complete, ollama_embed
 from lightrag.utils import EmbeddingFunc, logger, set_verbose_debug
 from raganything import RAGAnything, RAGAnythingConfig
 
@@ -115,26 +116,25 @@ async def process_with_rag(
             enable_equation_processing=True,
         )
 
-        # Define LLM model function - using environment variables for configuration
-        llm_model = os.getenv("LLM_MODEL", "qwen3-vl:8b")
+        # Define LLM model function - using Ollama
+        # 使用纯文本模型进行实体提取，视觉模型输出格式不符合 LightRAG 预期
+        llm_model = os.getenv("LLM_MODEL", "qwen2.5:7b")
+        llm_host = os.getenv("LLM_BINDING_HOST", "http://localhost:11434")
+        llm_timeout = int(os.getenv("TIMEOUT", "600"))
         
-        def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
-            # 增加超时时间到 600 秒，本地运行大论文需要更多时间
-            kwargs["timeout"] = 600
-            return openai_complete_if_cache(
-                llm_model,
-                prompt,
-                system_prompt=system_prompt,
-                history_messages=history_messages,
-                api_key=api_key,
-                base_url=base_url,
-                **kwargs,
-            )
+        logger.info(f"🤖 LLM 模型配置: {llm_model}")
+        logger.info(f"🌐 LLM Host: {llm_host}")
 
-        # Define vision model function for image processing - using environment variables
-        vision_model = os.getenv("VISION_MODEL", llm_model)  # Use LLM model if VISION_MODEL not set
+        # Define vision model function for Ollama multimodal models
+        # 视觉模型用于图像描述，使用 qwen3-vl 或回退到 LLM 模型
+        vision_model = os.getenv("VISION_MODEL", "qwen3-vl:8b")
+        vision_host = os.getenv("VISION_BINDING_HOST", llm_host)
+        vision_timeout = int(os.getenv("VISION_TIMEOUT", str(llm_timeout)))
         
-        def vision_model_func(
+        logger.info(f"👁️  Vision 模型配置: {vision_model}")
+        logger.info(f"🌐 Vision Host: {vision_host}")
+        
+        async def vision_model_func(
             prompt,
             system_prompt=None,
             history_messages=[],
@@ -144,54 +144,54 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                return openai_complete_if_cache(
-                    vision_model,
+                # Ollama expects messages parameter in kwargs
+                return await ollama_model_complete(
                     "",
                     system_prompt=None,
                     history_messages=[],
                     messages=messages,
-                    api_key=api_key,
-                    base_url=base_url,
-                    **kwargs,
+                    hashing_kv=kwargs.get("hashing_kv"),
+                    host=vision_host,
+                    timeout=1200,  # 增加超时到 20 分钟
+                    options={"num_ctx": 4096},
+                    **{k: v for k, v in kwargs.items() if k != "hashing_kv"},
                 )
             # Traditional single image format
             elif image_data:
-                return openai_complete_if_cache(
-                    vision_model,
+                # Build Ollama-compatible messages with image
+                vision_messages = []
+                if system_prompt:
+                    vision_messages.append({"role": "system", "content": system_prompt})
+                vision_messages.append({
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt},
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{image_data}"
+                            },
+                        },
+                    ],
+                })
+                return await ollama_model_complete(
                     "",
                     system_prompt=None,
                     history_messages=[],
-                    messages=[
-                        {"role": "system", "content": system_prompt}
-                        if system_prompt
-                        else None,
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": prompt},
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": f"data:image/jpeg;base64,{image_data}"
-                                    },
-                                },
-                            ],
-                        }
-                        if image_data
-                        else {"role": "user", "content": prompt},
-                    ],
-                    api_key=api_key,
-                    base_url=base_url,
-                    **kwargs,
+                    messages=vision_messages,
+                    hashing_kv=kwargs.get("hashing_kv"),
+                    host=vision_host,
+                    timeout=1200,  # 增加超时到 20 分钟
+                    options={"num_ctx": 4096},
+                    **{k: v for k, v in kwargs.items() if k != "hashing_kv"},
                 )
             # Pure text format
             else:
-                return llm_model_func(prompt, system_prompt, history_messages, **kwargs)
+                return await llm_model_func(prompt, system_prompt, history_messages, **kwargs)
 
-        # 强制从 .env 文件读取配置，避免环境变量冲突
+        # Configure embedding function using Ollama
         from dotenv import dotenv_values
         
-        # 彻底清除当前进程中的冲突环境变量，确保 load_dotenv 或直接读取起作用
         for key in ["EMBEDDING_DIM", "EMBEDDING_MODEL", "LLM_MODEL"]:
             if key in os.environ:
                 del os.environ[key]
@@ -200,40 +200,47 @@ async def process_with_rag(
         
         embedding_dim = int(env_values.get("EMBEDDING_DIM", 768))
         embedding_model = env_values.get("EMBEDDING_MODEL", "nomic-embed-text:latest")
-        embedding_base_url = env_values.get("EMBEDDING_BINDING_HOST", base_url)
-        embedding_api_key = env_values.get("EMBEDDING_BINDING_API_KEY", api_key)
+        embedding_host = env_values.get("EMBEDDING_BINDING_HOST", llm_host)
+        # 降低 max_token_size 避免超过 nomic-embed-text 的上下文限制（2048）
+        embedding_max_tokens = int(env_values.get("MAX_EMBED_TOKENS", "512"))
         
-        logger.info(f"📊 [DEBUG] 强制使用以下配置:")
+        logger.info(f"📊 [DEBUG] Ollama Embedding配置:")
         logger.info(f"   - 模型: {embedding_model}")
         logger.info(f"   - 维度: {embedding_dim}")
-        logger.info(f"   - URL: {embedding_base_url}")
+        logger.info(f"   - Host: {embedding_host}")
+        logger.info(f"   - 最大Tokens: {embedding_max_tokens}")
 
         embedding_func = EmbeddingFunc(
             embedding_dim=embedding_dim,
-            max_token_size=8192,
-            func=lambda texts: openai_embed(
-                texts,
-                model=embedding_model,
-                api_key=embedding_api_key,
-                base_url=embedding_base_url,
-                embedding_dim=embedding_dim,  # 关键：必须传递embedding_dim给openai_embed
+            max_token_size=embedding_max_tokens,
+            func=partial(
+                ollama_embed.func,
+                embed_model=embedding_model,
+                host=embedding_host,
+                timeout=1200,  # 增加 embedding 超时到 20 分钟
             ),
         )
         
-        # 验证embedding_func的维度是否正确
-        logger.info(f"✅ EmbeddingFunc 创建完成，验证维度: {embedding_func.embedding_dim}")
+        logger.info(f"✅ EmbeddingFunc 创建完成，维度: {embedding_func.embedding_dim}")
 
-        # Initialize RAGAnything with new dataclass structure
-        # 移除不支持的参数，确保维度通过 embedding_func 传递
-        # 增加超时时间并降低并发，防止本地模型超时
+        # Initialize RAGAnything with Ollama-optimized configuration
         rag = RAGAnything(
             config=config,
-            llm_model_func=llm_model_func,
+            llm_model_func=ollama_model_complete,
             vision_model_func=vision_model_func,
             embedding_func=embedding_func,
             lightrag_kwargs={
-                "default_llm_timeout": 1200,  # 增加到 20 分钟
-                "llm_model_max_async": 1,     # 降低并发，一个一个处理，防止卡死
+                "llm_model_name": llm_model,
+                "summary_max_tokens": 2048,
+                "chunk_token_size": 200,
+                "chunk_overlap_token_size": 30,
+                "llm_model_kwargs": {
+                    "host": llm_host,
+                    "options": {"num_ctx": 4096},
+                    "timeout": 1200,  # 增加超时到 20 分钟
+                },
+                "llm_model_max_async": 1,  # 单并发处理
+                "default_llm_timeout": 1200,  # LightRAG 内部超时也设置为 20 分钟
             }
         )
 
@@ -245,51 +252,68 @@ async def process_with_rag(
         # Example queries - demonstrating different query approaches
         logger.info("\nQuerying processed document:")
 
-        # 1. Pure text queries using aquery()
+        # 1. 纯文本查询 - 针对元表面微波吸收器论文
         text_queries = [
-            "What is the main content of the document?",
-            "What are the key topics discussed?",
+            "What is the Neuro-TF approach proposed in this paper?",
+            "What are the advantages of using neural networks for metasurface design?",
+            "How does the proposed method compare with traditional design methods in terms of speed?",
         ]
 
         for query in text_queries:
-            logger.info(f"\n[Text Query]: {query}")
+            logger.info(f"\n[文本查询]: {query}")
             result = await rag.aquery(query, mode="hybrid")
-            logger.info(f"Answer: {result}")
+            logger.info(f"回答: {result}")
 
-        # 2. Multimodal query with specific multimodal content using aquery_with_multimodal()
+        # 2. 多模态查询 - 分析吸收率性能数据表格
         logger.info(
-            "\n[Multimodal Query]: Analyzing performance data in context of document"
+            "\n[多模态查询]: 分析超材料吸收器的性能参数表格"
         )
         multimodal_result = await rag.aquery_with_multimodal(
-            "Compare this performance data with any similar results mentioned in the document",
+            "Compare this absorption performance data with the results reported in the paper. Are these values reasonable for metasurface-based microwave absorbers?",
             multimodal_content=[
                 {
                     "type": "table",
-                    "table_data": """Method,Accuracy,Processing_Time
-                                RAGAnything,95.2%,120ms
-                                Traditional_RAG,87.3%,180ms
-                                Baseline,82.1%,200ms""",
-                    "table_caption": "Performance comparison results",
+                    "table_data": """Frequency(GHz),Absorption_Rate(%),Thickness(mm),Design_Method
+                                10.5,98.5,3.2,Neuro-TF
+                                10.5,95.2,3.2,Traditional_Optimization
+                                10.5,92.1,3.2,Empirical_Design""",
+                    "table_caption": "Metasurface absorber performance comparison at 10.5 GHz",
                 }
             ],
             mode="hybrid",
         )
-        logger.info(f"Answer: {multimodal_result}")
+        logger.info(f"回答: {multimodal_result}")
 
-        # 3. Another multimodal query with equation content
-        logger.info("\n[Multimodal Query]: Mathematical formula analysis")
+        # 3. 多模态查询 - 电磁场公式分析
+        logger.info("\n[多模态查询]: 分析电磁波反射系数公式")
         equation_result = await rag.aquery_with_multimodal(
-            "Explain this formula and relate it to any mathematical concepts in the document",
+            "Explain this reflection coefficient formula and how it relates to the absorption rate calculation mentioned in the paper",
             multimodal_content=[
                 {
                     "type": "equation",
-                    "latex": "F1 = 2 \\cdot \\frac{precision \\cdot recall}{precision + recall}",
-                    "equation_caption": "F1-score calculation formula",
+                    "latex": "\\Gamma = \\frac{Z_s - Z_0}{Z_s + Z_0}",
+                    "equation_caption": "Reflection coefficient formula where Z_s is surface impedance and Z_0 is free space impedance",
                 }
             ],
             mode="hybrid",
         )
-        logger.info(f"Answer: {equation_result}")
+        logger.info(f"回答: {equation_result}")
+
+        # 4. 多模态查询 - 图像分析（针对论文中的图表）
+        logger.info("\n[多模态查询]: 查询论文中的图像信息")
+        image_query_result = await rag.aquery(
+            "Describe the metasurface unit cell structure shown in the figures. What are the key geometric parameters?",
+            mode="hybrid",
+        )
+        logger.info(f"回答: {image_query_result}")
+
+        # 5. 另一个图像查询 - 吸收率曲线
+        logger.info("\n[多模态查询]: 查询吸收率频谱曲线")
+        absorption_curve_result = await rag.aquery(
+            "What is the absorption spectrum shown in the paper? At which frequency does the absorber achieve peak performance?",
+            mode="hybrid",
+        )
+        logger.info(f"回答: {absorption_curve_result}")
 
     except Exception as e:
         logger.error(f"Error processing with RAG: {str(e)}")

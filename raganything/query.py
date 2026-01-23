@@ -708,13 +708,16 @@ class QueryMixin:
             if isinstance(content, str):
                 # Pure text mode
                 result = await self.vision_model_func(
-                    content, system_prompt=system_prompt
+                    content, 
+                    system_prompt=system_prompt,
+                    hashing_kv=self.lightrag.llm_response_cache,  # 传递 hashing_kv
                 )
             else:
                 # Multimodal mode - pass complete messages directly to VLM
                 result = await self.vision_model_func(
                     "",  # Empty prompt since we're using messages format
                     messages=messages,
+                    hashing_kv=self.lightrag.llm_response_cache,  # 传递 hashing_kv
                 )
 
             return result
