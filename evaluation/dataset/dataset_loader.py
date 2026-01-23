@@ -17,11 +17,28 @@ class EvaluationDataset:
         
         Args:
             data: 数据集字典，应包含:
-                - metadata: 数据集元信息
-                - queries: 查询列表
+                - metadata: 数据集元信息（可选）
+                - queries: 查询列表（旧格式）
+                - test_cases: 测试用例列表（RAGAS格式）
         """
         self.metadata = data.get("metadata", {})
-        self.queries = data.get("queries", [])
+        
+        # 支持两种格式：
+        # 1. 旧格式：queries
+        # 2. RAGAS格式：test_cases
+        if "test_cases" in data:
+            # RAGAS格式：test_cases
+            self.queries = data.get("test_cases", [])
+            # 转换为统一格式
+            for query in self.queries:
+                if "question" not in query:
+                    continue
+                # 确保有ground_truth字段
+                if "ground_truth" not in query:
+                    query["ground_truth"] = query.get("answer", "")
+        else:
+            # 旧格式：queries
+            self.queries = data.get("queries", [])
     
     def filter_by_type(self, query_type: str) -> List[Dict[str, Any]]:
         """
@@ -155,17 +172,21 @@ class DatasetLoader:
         Returns:
             bool: 是否有效
         """
-        required_fields = ["queries"]
+        # 支持两种格式：queries 或 test_cases
+        if "queries" not in data and "test_cases" not in data:
+            print("❌ 缺少必需字段: 'queries' 或 'test_cases'")
+            return False
         
-        for field in required_fields:
-            if field not in data:
-                print(f"❌ 缺少必需字段: {field}")
-                return False
+        # 获取查询列表
+        queries = data.get("queries", data.get("test_cases", []))
         
         # 验证每个查询的格式
-        for i, query in enumerate(data["queries"]):
+        for i, query in enumerate(queries):
             if "question" not in query:
                 print(f"❌ 查询 {i} 缺少 'question' 字段")
                 return False
+            # RAGAS格式需要ground_truth
+            if "test_cases" in data and "ground_truth" not in query:
+                print(f"⚠️  查询 {i} 缺少 'ground_truth' 字段（RAGAS格式推荐）")
         
         return True

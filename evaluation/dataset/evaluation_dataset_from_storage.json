@@ -1,0 +1,377 @@
+{
+  "metadata": {
+    "name": "RAG-Anything Evaluation Dataset (Auto-Generated)",
+    "description": "基于 rag_storage1 真实数据自动生成的评估数据集",
+    "version": "1.0",
+    "created_at": "2026-01-23T15:11:21.369717",
+    "source_storage": "rag_storage1",
+    "statistics": {
+      "total_entities": 111,
+      "total_relations": 74,
+      "total_text_chunks": 66
+    }
+  },
+  "queries": [
+    {
+      "id": "text_q1",
+      "type": "text",
+      "question": "What information is provided about \nImage Content Analysis:\nImage Path: /home/ik2200-?",
+      "ground_truth": "(a) Before optimization $[ L _ { 1 } \\ L _ { 2 } \\ d _ { 1 } ] = [ 1 7 ",
+      "relevant_chunks": [
+        "chunk-5ad29c70232e0a9444c4ea7f6d35212b"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q2",
+      "type": "text",
+      "question": "What information is provided in the document about \nImage Content Analysis:\nImage Path: /home/ik2200-?",
+      "ground_truth": "\nImage Content Analysis:\nImage Path: /home/ik2200-2025-g2/WorkZone/RAG-Anything/output1/test/hybrid_auto/images/a4623800131b510c375dc652703f191ef222ad13b7c9cc5ee16eb8c02370964c.jpg\nCaptions: (a) \nFoot",
+      "relevant_chunks": [
+        "chunk-f337dda86aa46240cec1cfc30ccd965b"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q3",
+      "type": "text",
+      "question": "What information is provided about Footer Content Analysis:\nContent: {'type': 'footer?",
+      "ground_truth": "Downloaded on December 19,2023 at 12:13:41 UTC from IEEE Xplore",
+      "relevant_chunks": [
+        "chunk-41900350ea42595fe6ce79a10523084e"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q4",
+      "type": "text",
+      "question": "What method or approach is described regarding Page_Number Content Analysis:\nContent: {'type': 'p?",
+      "ground_truth": "This section follows other sections (3, 3.1, 3.2) providing specific examples and results.\n    - Key information and elements: The text introduces the methodology of the neuro-TF model training process, the comparison with pure neural networks (MLP3), and the optimization results for a frequency-selective microwave absorber design.\n    - Relationships between components: It connects the theoretical framework described in earlier pages to practical applications and performance metrics",
+      "relevant_chunks": [
+        "chunk-657ce5d21a1c99b0bdd3ae20ebd2581e"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q5",
+      "type": "text",
+      "question": "What information is provided about \nImage Content Analysis:\nImage Path: /home/ik2200-?",
+      "ground_truth": "\nFootnotes: None\n\nVisual Analysis: {\n    \"detailed_description\": {\n        \"A comprehensive and detailed visual description of the image following these guidelines\":\n        -1.0023589041095292  \t}\n    }",
+      "relevant_chunks": [
+        "chunk-7deda7bdd1c0abcc51ea4ec15b142bb1"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q6",
+      "type": "text",
+      "question": "What information is provided about Header Content Analysis:\nContent: {'type': 'header?",
+      "ground_truth": "The structure is straightforward and concise, providing essential details:\n\n- **Content Structure and Organization**: The header directly states the name of the symposium followed by key information such as location and dates.\n- **Key Information and Elements**: It includes the full official name of the event (PIERS), the city and country where it took place (Prague, Czech Republic), and the specific date range for the conference (3–6 July).\n- **Relationships between Components**: The header is a standalone piece but clearly links to broader discussions about conferences in photonics and electromagnetics research.\n- **Context and Significance in Relation to Surrounding Content**: This header sets the stage for detailed content related to presentations, contributions, or discussions that occurred at this symposium",
+      "relevant_chunks": [
+        "chunk-8b12cad92ac8d1644609fa3455f2cc3f"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q7",
+      "type": "text",
+      "question": "What information is provided about Table Analysis:\nImage Path: /home/ik2200-2025-g2/W?",
+      "ground_truth": "\nStructure: <table><tr><td rowspan=\"6\">Case1 (small range)</td><td rowspan=\"3\">Geometrical Variables</td><td colspan=\"3\">Training Data</td><td colspan=\"3\">Testing Data</td><td colspan=\"4\">Model Accuracy</td></tr><tr><td rowspan=\"2\">Min</td><td rowspan=\"2\">Max</td><td rowspan=\"2\">Step</td><td rowspan=\"2\">Min</td><td rowspan=\"2\">Max</td><td rowspan=\"2\">Step</td><td colspan=\"2\">MLP3</td><td colspan=\"2\">neuro-TF</td></tr><tr><td>Training Error</td><td>Testing Error</td><td>Training Error</td><td>Testing Error</td></tr><tr><td>L1(mm)</td><td>16</td><td>18</td><td>0.2</td><td>16.1</td><td>17.9</td><td>0.2</td><td rowspan=\"3\">1.444%</td><td rowspan=\"3\">1.2844%</td><td rowspan=\"3\">0.7513%</td><td rowspan=\"3\">0.8259%</td></tr><tr><td>L2(mm)</td><td>16</td><td>18</td><td>0.2</td><td>16.1</td><td>17.9</td><td>0.2</td></tr><tr><td>d1(mm)</td><td>10</td><td>11</td><td>0.2</td><td>10.1</td><td>0.2</td><td>10.9</td></tr><tr><td rowspan=\"5\">Case2 (large range)</td><td rowspan=\"2\">Geometrical Variables</td><td rowspan=\"2\">Min</td><td rowspan=\"2\">Max</td><td rowspan=\"2\">Step</td><td rowspan=\"2\">Min</td><td rowspan=\"2\">Max</td><td rowspan=\"2\">Step</td><td colspan=\"2\">MLP3</td><td colspan=\"2\">neuro-TF</td></tr><tr><td>Training Error</td><td>Testing Error</td><td>Training Error</td><td>Testing Error</td></tr><tr><td>L1(mm)</td><td>13</td><td>30</td><td>1</td><td>13.5</td><td>29.5</td><td>1</td><td rowspan=\"3\">7.8417%</td><td rowspan=\"3\">7.618%</td><td rowspan=\"3\">4.9497%</td><td rowspan=\"3\">4.1678%</td></tr><tr><td>L2(mm)</td><td>13</td><td>30</td><td>1</td><td>13.5</td><td>29.5</td><td>1</td></tr><tr><td>d1(mm)</td><td>1</td><td>171</td><td>5</td><td>3</td><td>168</td><td>5</td></tr></table>\nFootnotes: None\n\nAnalysis: ```json\n{\n    \"detailed_description\": {\n        \"Table Structure and Organization\": \"The table is organized into two main sections, each corresponding to a different case (Case 1 and Case 2) in the parametric modeling of a microwave absorber",
+      "relevant_chunks": [
+        "chunk-0a587b933da31e07538b828493524bd7"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "text_q8",
+      "type": "text",
+      "question": "What information is provided about Footer Content Analysis:\nContent: {'type': 'footer?",
+      "ground_truth": "Downloaded on December 19,2023 at 12:13:41 UTC from IEEE Xplore",
+      "relevant_chunks": [
+        "chunk-e39c2397a7027463592efe6f863c9db2"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "retrieval",
+        "generation"
+      ]
+    },
+    {
+      "id": "entity_q1",
+      "type": "entity",
+      "question": "What is Basic Scientific Center of Information Metamaterials and what role does it play in the paper?",
+      "ground_truth": "Basic Scientific Center of Information Metamaterials is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-89cf9c597ec751499cae21be34ea5726"
+      ],
+      "relevant_entities": [
+        "Basic Scientific Center of Information Metamaterials"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "entity_q2",
+      "type": "entity",
+      "question": "What is Tie Jun Cui and what role does it play in the paper?",
+      "ground_truth": "Tie Jun Cui is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-94f0732bdb7bba122c2218f37b2d9487"
+      ],
+      "relevant_entities": [
+        "Tie Jun Cui"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "entity_q3",
+      "type": "entity",
+      "question": "What is Neural Networks and what role does it play in the paper?",
+      "ground_truth": "Neural Networks is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-8af597693d421aae7cf3609c27386b35"
+      ],
+      "relevant_entities": [
+        "Neural Networks"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "entity_q4",
+      "type": "entity",
+      "question": "What is Yunlang Cai and what role does it play in the paper?",
+      "ground_truth": "Yunlang Cai is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-94f0732bdb7bba122c2218f37b2d9487"
+      ],
+      "relevant_entities": [
+        "Yunlang Cai"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "entity_q5",
+      "type": "entity",
+      "question": "What is Meta-surface and what role does it play in the paper?",
+      "ground_truth": "Meta-surface is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-c86cb74525f219265f730a9331c0c09b"
+      ],
+      "relevant_entities": [
+        "Meta-surface"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "entity_q6",
+      "type": "entity",
+      "question": "What is $y$ and what role does it play in the paper?",
+      "ground_truth": "$y$ is mentioned in the context of metasurface design and electromagnetic applications.",
+      "relevant_chunks": [
+        "chunk-6bd89dfe32f38d80e7af79c2a761b964"
+      ],
+      "relevant_entities": [
+        "$y$"
+      ],
+      "difficulty": "medium",
+      "evaluation_focus": [
+        "entity_extraction",
+        "entity_linking"
+      ]
+    },
+    {
+      "id": "relation_q1",
+      "type": "relation",
+      "question": "How is Unknown related to Unknown?",
+      "ground_truth": "Unknown is related to Unknown.",
+      "relevant_chunks": [
+        "chunk-07bc6597f2a237172d2879a1da678064"
+      ],
+      "relevant_entities": [
+        "Unknown",
+        "Unknown"
+      ],
+      "relevant_relations": [
+        "Table 1<SEP>neuro-TF method"
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "relation_extraction",
+        "knowledge_graph"
+      ]
+    },
+    {
+      "id": "relation_q2",
+      "type": "relation",
+      "question": "How is Unknown related to Unknown?",
+      "ground_truth": "Unknown is related to Unknown.",
+      "relevant_chunks": [
+        "chunk-896ac1953d85c95414a4270b0b215a6b"
+      ],
+      "relevant_entities": [
+        "Unknown",
+        "Unknown"
+      ],
+      "relevant_relations": [
+        "Frequency-Selected Microwave Absorber Design<SEP>Neuro-TF-Based Parametric Modeling of Metasurfaces"
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "relation_extraction",
+        "knowledge_graph"
+      ]
+    },
+    {
+      "id": "relation_q3",
+      "type": "relation",
+      "question": "How is Unknown related to Unknown?",
+      "ground_truth": "Unknown is related to Unknown.",
+      "relevant_chunks": [
+        "chunk-07bc6597f2a237172d2879a1da678064"
+      ],
+      "relevant_entities": [
+        "Unknown",
+        "Unknown"
+      ],
+      "relevant_relations": [
+        "Case 2<SEP>neuro-TF method"
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "relation_extraction",
+        "knowledge_graph"
+      ]
+    },
+    {
+      "id": "relation_q4",
+      "type": "relation",
+      "question": "How is Unknown related to Unknown?",
+      "ground_truth": "Unknown is related to Unknown.",
+      "relevant_chunks": [
+        "chunk-d8abc45cffbb9c9a9882783944183a60"
+      ],
+      "relevant_entities": [
+        "Unknown",
+        "Unknown"
+      ],
+      "relevant_relations": [
+        "1h 10min<SEP>Neuro-tf Model"
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "relation_extraction",
+        "knowledge_graph"
+      ]
+    },
+    {
+      "id": "multimodal_q1",
+      "type": "multimodal",
+      "modality_type": "image",
+      "question": "Describe the image information presented in the paper.",
+      "ground_truth": "The paper contains image that illustrates key concepts about metasurface design.",
+      "relevant_chunks": [
+        "chunk-667de3cf4ec15dbdb274bb0523a27a59"
+      ],
+      "relevant_multimodal": [
+        {
+          "type": "image",
+          "description": "content from paper"
+        }
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "multimodal_processing",
+        "multimodal_retrieval"
+      ]
+    },
+    {
+      "id": "multimodal_q2",
+      "type": "multimodal",
+      "modality_type": "image",
+      "question": "Describe the image information presented in the paper.",
+      "ground_truth": "The paper contains image that illustrates key concepts about metasurface design.",
+      "relevant_chunks": [
+        "chunk-c86cb74525f219265f730a9331c0c09b"
+      ],
+      "relevant_multimodal": [
+        {
+          "type": "image",
+          "description": "content from paper"
+        }
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "multimodal_processing",
+        "multimodal_retrieval"
+      ]
+    },
+    {
+      "id": "multimodal_q3",
+      "type": "multimodal",
+      "modality_type": "image",
+      "question": "Describe the image information presented in the paper.",
+      "ground_truth": "The paper contains image that illustrates key concepts about metasurface design.",
+      "relevant_chunks": [
+        "chunk-b447d1a72eb66f7608b363b5a8c8dc09"
+      ],
+      "relevant_multimodal": [
+        {
+          "type": "image",
+          "description": "content from paper"
+        }
+      ],
+      "difficulty": "hard",
+      "evaluation_focus": [
+        "multimodal_processing",
+        "multimodal_retrieval"
+      ]
+    }
+  ]
+}

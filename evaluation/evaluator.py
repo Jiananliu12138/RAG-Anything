@@ -10,8 +10,20 @@ from pathlib import Path
 from datetime import datetime
 
 from evaluation.config import EvaluationConfig
-from evaluation.components import RetrieverEvaluator, GeneratorEvaluator
+from evaluation.components import (
+    RetrieverEvaluator, 
+    GeneratorEvaluator,
+    EntityRelationEvaluator,
+    KnowledgeGraphEvaluator,
+    ChunkEmbeddingEvaluator
+)
 from evaluation.end_to_end import QAEvaluator, MultimodalEvaluator
+try:
+    from evaluation.end_to_end import RAGASEvaluator
+    RAGAS_AVAILABLE = True
+except ImportError:
+    RAGASEvaluator = None
+    RAGAS_AVAILABLE = False
 from evaluation.dataset import DatasetLoader, EvaluationDataset
 
 
@@ -48,6 +60,7 @@ class RAGEvaluator:
     def _init_evaluators(self):
         """初始化所有评估器"""
         config_dict = {
+            "working_dir": self.config.working_dir,
             "retrieval_top_k": self.config.retrieval_top_k,
             "use_rouge": self.config.use_rouge,
             "use_bleu": self.config.use_bleu,
@@ -70,6 +83,15 @@ class RAGEvaluator:
                 llm_func=self.llm_func
             )
         
+        if self.config.enable_entity_relation_eval:
+            self.entity_relation_evaluator = EntityRelationEvaluator(config=config_dict)
+        
+        if self.config.enable_knowledge_graph_eval:
+            self.knowledge_graph_evaluator = KnowledgeGraphEvaluator(config=config_dict)
+        
+        if self.config.enable_chunk_embedding_eval:
+            self.chunk_embedding_evaluator = ChunkEmbeddingEvaluator(config=config_dict)
+        
         # 端到端评估器
         if self.config.enable_qa_eval:
             self.qa_evaluator = QAEvaluator(
@@ -82,6 +104,19 @@ class RAGEvaluator:
                 config=config_dict,
                 llm_func=self.llm_func
             )
+        
+        # RAGAS评估器（需要安装ragas）
+        if self.config.enable_ragas_eval:
+            if not RAGAS_AVAILABLE:
+                print("⚠️  RAGAS未安装，跳过RAGAS评估。安装命令: pip install ragas datasets langchain-ollama")
+            else:
+                self.ragas_evaluator = RAGASEvaluator(
+                    config=config_dict,
+                    llm_func=self.llm_func,
+                    eval_llm_model=self.config.ragas_llm_model,
+                    eval_embedding_model=self.config.ragas_embedding_model,
+                    ollama_host=self.config.ragas_ollama_host,
+                )
     
     async def evaluate_all(
         self,
@@ -126,7 +161,9 @@ class RAGEvaluator:
         }
         
         # 组件级评估
-        if self.config.enable_retriever_eval or self.config.enable_generator_eval:
+        if (self.config.enable_retriever_eval or self.config.enable_generator_eval or 
+            self.config.enable_entity_relation_eval or self.config.enable_knowledge_graph_eval or
+            self.config.enable_chunk_embedding_eval):
             print("\n" + "="*70)
             print("📈 组件级评估")
             print("="*70)
@@ -148,6 +185,31 @@ class RAGEvaluator:
                 results["component_level"]["generator"] = generator_result.to_dict()
                 print(f"\n✅ 生成器评估完成")
                 self._print_metrics_summary(generator_result.summary)
+            
+            if self.config.enable_entity_relation_eval:
+                entity_relation_result = await self.entity_relation_evaluator.evaluate(
+                    rag_instance=self.rag,
+                    test_queries=dataset.get_all_queries()
+                )
+                results["component_level"]["entity_relation"] = entity_relation_result.to_dict()
+                print(f"\n✅ 实体关系评估完成")
+                self._print_metrics_summary(entity_relation_result.summary)
+            
+            if self.config.enable_knowledge_graph_eval:
+                kg_result = await self.knowledge_graph_evaluator.evaluate(
+                    rag_instance=self.rag
+                )
+                results["component_level"]["knowledge_graph"] = kg_result.to_dict()
+                print(f"\n✅ 知识图谱评估完成")
+                self._print_metrics_summary(kg_result.summary)
+            
+            if self.config.enable_chunk_embedding_eval:
+                ce_result = await self.chunk_embedding_evaluator.evaluate(
+                    rag_instance=self.rag
+                )
+                results["component_level"]["chunk_embedding"] = ce_result.to_dict()
+                print(f"\n✅ Chunks & Embeddings 评估完成")
+                self._print_metrics_summary(ce_result.summary)
         
         # 端到端评估
         print("\n" + "="*70)
@@ -175,6 +237,31 @@ class RAGEvaluator:
                 results["end_to_end"]["multimodal"] = multimodal_result.to_dict()
                 print(f"\n✅ 多模态评估完成")
                 self._print_metrics_summary(multimodal_result.summary)
+        
+        if self.config.enable_ragas_eval:
+            if RAGAS_AVAILABLE and hasattr(self, 'ragas_evaluator'):
+                # RAGAS评估需要test_cases格式的数据
+                # 如果数据集是queries格式，需要转换
+                test_cases = []
+                for query in dataset.get_all_queries():
+                    test_case = {
+                        "question": query.get("question", ""),
+                        "ground_truth": query.get("ground_truth", query.get("answer", "")),
+                    }
+                    if "project" in query:
+                        test_case["project"] = query["project"]
+                    test_cases.append(test_case)
+                
+                if test_cases:
+                    ragas_result = await self.ragas_evaluator.evaluate(
+                        rag_instance=self.rag,
+                        test_queries=test_cases
+                    )
+                    results["end_to_end"]["ragas"] = ragas_result.to_dict()
+                    print(f"\n✅ RAGAS评估完成")
+                    self._print_metrics_summary(ragas_result.summary)
+            else:
+                print("\n⚠️  RAGAS评估已配置但未启用（需要安装ragas）")
         
         # 保存结果
         self.results = results

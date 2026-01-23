@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
-RAG-Anything 评估系统使用示例
-演示如何使用评估系统对 RAG 进行全面评估
+RAG-Anything 完整评估系统示例
+包含实体关系评估和知识图谱评估
 """
 
 import os
@@ -24,6 +24,7 @@ from evaluation import (
     EvaluationConfig,
     DatasetLoader,
 )
+from evaluation.dataset.generate_from_storage import RAGStorageDatasetGenerator
 
 load_dotenv(dotenv_path=".env", override=False)
 
@@ -32,13 +33,39 @@ async def main():
     """主函数"""
     
     print("\n" + "="*70)
-    print("RAG-Anything 评估系统示例")
+    print("🚀 RAG-Anything 完整评估系统")
     print("="*70)
     
-    # 1. 初始化 RAG 实例（加载已有的知识图谱）
-    print("\n📦 步骤 1: 初始化 RAG 实例...")
+    # ============================================================
+    # 步骤 1: 生成评估数据集（从 rag_storage1）
+    # ============================================================
+    print("\n📊 步骤 1: 生成评估数据集...")
     
-    working_dir = "./rag_storage1"
+    storage_dir = "./rag_storage1"
+    dataset_path = "./evaluation_dataset_from_storage.json"
+    
+    # 检查是否需要重新生成数据集
+    if not os.path.exists(dataset_path):
+        print(f"📝 从 {storage_dir} 生成评估数据集...")
+        generator = RAGStorageDatasetGenerator(storage_dir=storage_dir)
+        dataset_path = generator.generate_dataset(
+            num_text_queries=8,
+            num_entity_queries=6,
+            num_relation_queries=4,
+            num_multimodal_queries=3,
+            output_path=dataset_path
+        )
+    else:
+        print(f"✅ 使用现有数据集: {dataset_path}")
+    
+    # 加载数据集
+    dataset = DatasetLoader.load_from_json(dataset_path)
+    print(f"✅ 数据集已加载: {len(dataset)} 个查询")
+    
+    # ============================================================
+    # 步骤 2: 初始化 RAG 实例
+    # ============================================================
+    print("\n📦 步骤 2: 初始化 RAG 实例...")
     
     # 配置 Ollama
     llm_model = os.getenv("LLM_MODEL", "qwen2.5:7b-instruct")
@@ -74,7 +101,7 @@ async def main():
     
     # 创建 RAG 配置
     rag_config = RAGAnythingConfig(
-        working_dir=working_dir,
+        working_dir=storage_dir,
         enable_image_processing=True,
         enable_table_processing=True,
         enable_equation_processing=True,
@@ -102,42 +129,21 @@ async def main():
     
     # 加载知识图谱
     await rag._ensure_lightrag_initialized()
-    print(f"✅ RAG 实例已加载: {working_dir}")
+    print(f"✅ RAG 实例已加载: {storage_dir}")
     
-    # 2. 创建或加载评估数据集
-    print("\n📊 步骤 2: 准备评估数据集...")
-    
-    dataset_path = "./evaluation/dataset/evaluation_dataset_from_storage.json"
-    
-    # 如果数据集不存在，从storage生成
-    if not os.path.exists(dataset_path):
-        print(f"📝 从 {working_dir} 生成评估数据集...")
-        from evaluation.dataset.generate_from_storage import RAGStorageDatasetGenerator
-        generator = RAGStorageDatasetGenerator(storage_dir=working_dir)
-        dataset_path = generator.generate_dataset(
-            num_text_queries=8,
-            num_entity_queries=6,
-            num_relation_queries=4,
-            num_multimodal_queries=3,
-            output_path=dataset_path
-        )
-    
-    # 加载数据集
-    dataset = DatasetLoader.load_from_json(dataset_path)
-    print(f"✅ 数据集已加载: {len(dataset)} 个查询")
-    
-    # 3. 配置评估系统
+    # ============================================================
+    # 步骤 3: 配置评估系统
+    # ============================================================
     print("\n⚙️  步骤 3: 配置评估系统...")
     
     eval_config = EvaluationConfig(
-        working_dir=working_dir,
+        working_dir=storage_dir,
         output_dir="./evaluation_results",
-        # 组件级评估（全部启用）
+        # 组件级评估（包含新增的评估）
         enable_retriever_eval=True,
         enable_generator_eval=True,
-        enable_entity_relation_eval=True,  # 实体关系评估
-        enable_knowledge_graph_eval=True,  # 知识图谱评估
-        enable_chunk_embedding_eval=True,  # Chunks和Embeddings评估
+        enable_entity_relation_eval=True,  # 新增：实体关系评估
+        enable_knowledge_graph_eval=True,  # 新增：知识图谱评估
         # 端到端评估
         enable_qa_eval=True,
         enable_multimodal_eval=True,
@@ -157,13 +163,14 @@ async def main():
     print(f"✅ 评估配置完成")
     print(f"  - 检索评估: {eval_config.enable_retriever_eval}")
     print(f"  - 生成评估: {eval_config.enable_generator_eval}")
-    print(f"  - 实体关系评估: {eval_config.enable_entity_relation_eval}")
-    print(f"  - 知识图谱评估: {eval_config.enable_knowledge_graph_eval}")
-    print(f"  - Chunks&Embeddings评估: {eval_config.enable_chunk_embedding_eval}")
+    print(f"  - 实体关系评估: {eval_config.enable_entity_relation_eval} ⭐ 新增")
+    print(f"  - 知识图谱评估: {eval_config.enable_knowledge_graph_eval} ⭐ 新增")
     print(f"  - 问答评估: {eval_config.enable_qa_eval}")
     print(f"  - 多模态评估: {eval_config.enable_multimodal_eval}")
     
-    # 4. 创建 LLM 评判函数（用于 LLM-as-a-Judge）
+    # ============================================================
+    # 步骤 4: 创建 LLM 评判函数
+    # ============================================================
     async def llm_judge_func(prompt):
         """LLM 评判函数"""
         result = await ollama_model_complete(
@@ -175,8 +182,10 @@ async def main():
         )
         return result
     
-    # 5. 执行评估
-    print("\n🚀 步骤 4: 执行评估...")
+    # ============================================================
+    # 步骤 5: 执行完整评估
+    # ============================================================
+    print("\n🚀 步骤 4: 执行完整评估...")
     
     evaluator = RAGEvaluator(
         rag_instance=rag,
@@ -187,41 +196,48 @@ async def main():
     # 执行完整评估
     results = await evaluator.evaluate_all(dataset=dataset)
     
-    # 6. 生成报告
+    # ============================================================
+    # 步骤 6: 生成报告
+    # ============================================================
     print("\n📝 步骤 5: 生成评估报告...")
     report_path = evaluator.generate_report(output_format="markdown")
     
+    # ============================================================
+    # 完成
+    # ============================================================
     print("\n" + "="*70)
     print("✅ 评估完成！")
     print("="*70)
-    print(f"\n结果文件:")
+    print(f"\n📁 结果文件:")
+    print(f"  - 数据集: {dataset_path}")
     print(f"  - JSON: {eval_config.output_dir}/evaluation_results_*.json")
     print(f"  - 报告: {report_path}")
     
-    # 7. 演示快速评估（可选）
+    # ============================================================
+    # 打印关键指标摘要
+    # ============================================================
     print("\n" + "="*70)
-    print("💡 快速评估示例")
+    print("📊 关键指标摘要")
     print("="*70)
     
-    quick_questions = [
-        "What is the main contribution of this paper?",
-        "What method is proposed in the paper?"
-    ]
-    
-    quick_ground_truths = [
-        "The paper proposes a Neuro-TF approach for metasurface design.",
-        "The Neuro-TF approach combines neural networks with transfer functions."
-    ]
-    
-    quick_result = await evaluator.quick_eval(
-        questions=quick_questions,
-        ground_truths=quick_ground_truths
-    )
-    
-    if quick_result:
-        print(f"\n✅ 快速评估完成:")
-        for metric_name, value in quick_result.get("summary", {}).items():
-            print(f"  {metric_name}: {value:.4f}")
+    if "component_level" in results:
+        # 实体关系评估
+        if "entity_relation" in results["component_level"]:
+            er_summary = results["component_level"]["entity_relation"]["summary"]
+            print("\n🔗 实体关系评估:")
+            for key, value in er_summary.items():
+                if "_mean" in key:
+                    print(f"  {key}: {value:.4f}")
+        
+        # 知识图谱评估
+        if "knowledge_graph" in results["component_level"]:
+            kg_summary = results["component_level"]["knowledge_graph"]["summary"]
+            print("\n🕸️  知识图谱评估:")
+            print(f"  节点数: {kg_summary.get('total_nodes', 0)}")
+            print(f"  边数: {kg_summary.get('total_edges', 0)}")
+            for key, value in kg_summary.items():
+                if "_mean" in key:
+                    print(f"  {key}: {value:.4f}")
 
 
 if __name__ == "__main__":
